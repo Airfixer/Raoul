@@ -1,10 +1,11 @@
-library(ppls)
-library(gtools)
-library(fBasics)
-library(Jmisc)
+
 ## Main-Function
 
 raoul<-function(x,m=5,tol=0.0001,maxit=20,facs=NULL,counts=NULL,returncat=FALSE,returncount=FALSE){
+  require(ppls)
+require(gtools)
+require(fBasics)
+require(Jmisc)
   y<-seqreg(x,tol,maxit,facs,counts)
   mi<-raoul.MI(y,m,returncat,returncount,x,facs)
   out<-list(as.data.frame(y[[1]]),mi,y[-1])
