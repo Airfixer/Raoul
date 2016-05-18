@@ -106,7 +106,7 @@ raoul.imputations<-function(y,returncat,returncount,x,facs){
       }else if(y[[4]][1,i]=="5"){
         q<-q+1
         nl<-sum(y[[4]][2,i]==y[[4]][2,]) ## Identify numer of factor levels
-        repl2[,q]<-paste(dat[,facs2[q]])
+        repl2[,q]<-paste(x[,facs2[q]])
         colnames(repl2)[q]<-colnames(x)[facs2[q]]
         i<-i+nl
 
