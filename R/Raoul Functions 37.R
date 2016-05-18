@@ -65,7 +65,7 @@ raoul.imputations<-function(y,returncat,returncount,x,facs){
     }
   }
     if(returncat){
-      facs2<-facs[which(apply(is.na(dat[,facs]),2,max)==0)]
+      facs2<-facs[which(apply(is.na(x[,facs]),2,max)==0)]
       i<-1
       s<-0
       q<-0
