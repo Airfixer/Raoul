@@ -8,5 +8,5 @@ Maintainer: David Randahl <david.randahl@gmail.com>
 Description: Creates Multiple Imputations using Iterated Sequential Regression
 License: GPL
 LazyData: TRUE
-Depends: R (>= 2.10), ppls, fBasics, gtools, Jmisc
+Depends: R (>= 2.10)
 Imports: ppls, fBasics, gtools, Jmisc
