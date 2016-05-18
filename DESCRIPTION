@@ -1,0 +1,11 @@
+Package: Raoul
+Type: Package
+Title: The Raoul Package for Missing Data
+Version: 0.1
+Date: 2016-05-18
+Author: David Randahl
+Maintainer: David Randahl <david.randahl@gmail.com>
+Description: Creates Multiple Imputations using Iterated Sequential Regression
+License: GPL
+LazyData: TRUE
+Depends: R (>= 2.10), ppls, fBasics, gtools, Jmisc
