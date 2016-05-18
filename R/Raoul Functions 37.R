@@ -1,4 +1,7 @@
-
+library(ppls)
+library(gtools)
+library(fBasics)
+library(Jmisc)
 ## Main-Function
 
 raoul<-function(x,m=5,tol=0.0001,maxit=20,facs=NULL,counts=NULL,returncat=FALSE,returncount=FALSE){
