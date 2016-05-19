@@ -15,7 +15,7 @@ raoul<-function(x,m=5,tol=0.0001,maxit=20,facs=NULL,counts=NULL,returncat=FALSE,
 raoul.MI<-function(y,m,returncat,returncount,x,facs){
   sets<-NULL
   for(k in 1:m){
-  sets<-c(sets,list(as.data.frame(raoul.imputations(y,returncat,returncount,x,facs))))
+    sets<-c(sets,list(as.data.frame(raoul.imputations(y,returncat,returncount,x,facs))))
   }
   names(sets)<-paste(rep("set",m),seq(1:m),sep="")
   return(sets)
@@ -31,7 +31,7 @@ raoul.imputations<-function(y,returncat,returncount,x,facs){
   for(i in 1:k){
     ind<-bimp[,i]!=0
     bimp[which(ind==TRUE),i]<-bimp[which(ind==TRUE),i]+sqrt(s[i])*rnorm(sum(ind),1,0)%*%chol(solve(t(z[,which(ind==TRUE)])%*%z[,which(ind==TRUE)]))
-
+    
   }
   set2<-set1<-z%*%bimp ## Matrix of fitted values from random parameters
   for(i in 1:k){
@@ -50,7 +50,7 @@ raoul.imputations<-function(y,returncat,returncount,x,facs){
         set3[which(set3[,l]==0),l]<-1e-10
       }
       i<-i+nl-1
-
+      
     }
     if(y[[4]][1,i]=="3"){
       set3[,i]<-exp(set2[,i])
@@ -64,31 +64,31 @@ raoul.imputations<-function(y,returncat,returncount,x,facs){
       }
     }
   }
-    if(returncat){
-      facs2<-facs[which(apply(is.na(x[,facs]),2,max)==0)]
-      i<-1
-      s<-0
-      q<-0
-      rems=NULL
-      if(sum(y[[4]][1,]=="2")!=0){
+  if(returncat){
+    facs2<-facs[which(apply(is.na(as.matrix(x[,facs])),2,max)==0)]
+    i<-1
+    s<-0
+    q<-0
+    rems=NULL
+    if(sum(y[[4]][1,]=="2")!=0){
       repl<-matrix(,n,length(unique(y[[4]][2,which(y[[4]][1,]=="2")])))
       colnames(repl)<-1:length(repl[1,])
-      }else{
-        repl<-NULL
-      }
-      if(sum(y[[4]][1,]=="5")!=0){
+    }else{
+      repl<-NULL
+    }
+    if(sum(y[[4]][1,]=="5")!=0){
       repl2<-matrix(,n,length(unique(y[[4]][2,which(y[[4]][1,]=="5")])))
       colnames(repl2)<-1:length(repl2[1,])
-      }else{
-        repl2<-NULL
-      }
-      while(i<=k){
-
+    }else{
+      repl2<-NULL
+    }
+    while(i<=k){
+      
       if(y[[4]][1,i]=="2"){ ## Converting odds ratio to probability
         s<-s+1
         nl<-sum(y[[4]][2,i]==y[[4]][2,]) ## Identify numer of factor levels
         run<-runif(n,0,1)
-
+        
         for(p in 1:nl){
           if(p==1){
             repl[which(is.na(repl[,s])),s]<-ifelse(set3[which(is.na(repl[,s])),i+p-1]<run[which(is.na(repl[,s]))],y[[8]][2,s],NA)
@@ -109,29 +109,31 @@ raoul.imputations<-function(y,returncat,returncount,x,facs){
         repl2[,q]<-paste(x[,facs2[q]])
         colnames(repl2)[q]<-colnames(x)[facs2[q]]
         i<-i+nl
-
-        }else{
-          rems<-c(rems,i)
-          i<-i+1
-        }
+        
+      }else{
+        rems<-c(rems,i)
+        i<-i+1
       }
-      colnames(set3)<-1:length(set3[1,])
-      colnames(set3)[rems]<-colnames(y[[4]][,which(y[[4]][1,]!="2" & y[[4]][1,]!="5")])
-      set4<-cbind(set3[,rems],repl,repl2)
-      set4<-set4[,colnames(x)]
-      set4[!is.na(x)]<-x[!is.na(x)]
-      return(set4)
-    }else{
-      set3[y[[2]]==0]<-y[[1]][y[[2]]==0] ## Replacing fitted values with observed
-      colnames(set3)<-colnames(y[[1]])
-      return(set3)
     }
-
-
-
-
-
-
+    colnames(set3)<-1:length(set3[1,])
+    colnames(set3)[rems]<-colnames(y[[4]][,which(y[[4]][1,]!="2" & y[[4]][1,]!="5")])
+    s3r<-as.data.frame(set3[,rems])
+    repl2s<-as.data.frame(cbind(repl,repl2))
+    set4<-cbind(s3r,repl2s)
+    set4<-set4[,colnames(x)]
+    set4[!is.na(x)]<-x[!is.na(x)]
+    return(set4)
+  }else{
+    set3[y[[2]]==0]<-y[[1]][y[[2]]==0] ## Replacing fitted values with observed
+    colnames(set3)<-colnames(y[[1]])
+    return(set3)
+  }
+  
+  
+  
+  
+  
+  
 }
 
 
@@ -146,10 +148,10 @@ raoul.imputations.dir<-function(y){
   for(i in 1:k){
     ind<-bimp[,i]!=0
     bimp[which(ind==TRUE),i]<-bimp[which(ind==TRUE),i]+sqrt(s[i])*rnorm(sum(ind),1,0)%*%chol(solve(t(z[,which(ind==TRUE)])%*%z[,which(ind==TRUE)]))
-
+    
   }
   set2<-set1<-z%*%bimp ## Matrix of fitted values from random parameters
-
+  
   for(i in 1:k){
     if(y[[4]][1,i]=="1"){ ## Adding normal error term to numeric
       set2[,i]<-set1[,i]+rnorm(n,0,1)*s[i]
@@ -161,14 +163,14 @@ raoul.imputations.dir<-function(y){
       }
       set2[,i:(i+nl-1)]<-t(as.matrix(apply(cbind(as.matrix(set2[,i:(i+nl-1)]),as.matrix(1-apply(as.matrix(set2[,i:(i+nl-1)]),1,sum))),1,rdirichlet,n=1)))[,-(nl+1)] ## Imputing Dirichlet draws
       i<-i+nl-1
-
+      
     }
   }
-
+  
   set2[y[[2]]==0]<-y[[1]][y[[2]]==0]
-
+  
   return(set2)
-
+  
 }
 
 
@@ -182,39 +184,39 @@ raoul.randomimps<-function(y){
       z[which(y[[2]][,i]==1),i]<-rnorm(sum(y[[2]][,i]),z[which(y[[2]][,i]==1),i],y[[3]][i])
     } else if(y[[4]][i]==2){
       z[which(y[[2]][,i]==1),i]<-rbeta(sum(y[[2]][,i]),
-                                          z[which(y[[2]][,i]==1),i]/y[[3]][i],
-                                          (1-z[which(y[[2]][,i]==1),i])/y[[3]][i])
+        z[which(y[[2]][,i]==1),i]/y[[3]][i],
+        (1-z[which(y[[2]][,i]==1),i])/y[[3]][i])
     }
-
+    
   }
   return(z)
-
+  
 }
 
 ## Fitting function for numeric variables. Called by EM-function
 
 raoul.olsfit<-function(mis,full,m,it){
-
-    fits<-NULL
-   b<-matrix(,length(full[1,]),length(m))
-    if(it==0){
-      if(length(full[1,])>1){
+  
+  fits<-NULL
+  b<-matrix(,length(full[1,]),length(m))
+  if(it==0){
+    if(length(full[1,])>1){
       b<-apply(mis,2,raoul.b1,obs=full)
-      }else{
-        b<-t(as.matrix(apply(mis,2,raoul.b1,obs=full)))
-
-      }
+    }else{
+      b<-t(as.matrix(apply(mis,2,raoul.b1,obs=full)))
+      
+    }
     for(r in 1:length(mis[1,])){
       fits<-cbind(fits,full%*%b[,r])
     }
+  }
+  else{
+    for(r in 1:length(mis[1,])){
+      b[-m[r],r]<-solve(t(full[,-m[r]])%*%full[,-m[r]])%*%t(full[,-m[r]])%*%mis[,r]
+      fits<-cbind(fits,full[,-m[r]]%*%b[-m[r],r])
     }
-    else{
-      for(r in 1:length(mis[1,])){
-        b[-m[r],r]<-solve(t(full[,-m[r]])%*%full[,-m[r]])%*%t(full[,-m[r]])%*%mis[,r]
-        fits<-cbind(fits,full[,-m[r]]%*%b[-m[r],r])
-      }
-    }
-    out<-list(fits,b)
+  }
+  out<-list(fits,b)
   return(out)
 }
 
@@ -295,7 +297,7 @@ raoul.lik2<-function(full,n){
   s<-cov(x)
   lik<- n*log(det(s))+sum(diag(solve(s)%*%t(demean(x))%*%demean(x)))
   return(lik)
-  }
+}
 
 
 ## Function for identifying factors. Called by EM-function
@@ -343,52 +345,52 @@ raoul.logistic2<-function(misfac,full,n1,it){
   for(i in 1:length(facnames)){ ## Return all columns which should be imputed
     facimp<-misfac[,which(colnames(misfac)==facnames[i])] ## Factors to be imputed
     r<-length(facimp[1,])
-
+    
     if(it>0){
-    full2<-matrix(full[!(colnames(full) %in% facnames[i])],n1,length(full[1,])-r) ## Drop factors to be imputed if not first imputation
+      full2<-matrix(full[!(colnames(full) %in% facnames[i])],n1,length(full[1,])-r) ## Drop factors to be imputed if not first imputation
     } else {
-    full2<-full[which(is.na(facimp[,1])==FALSE),] ## Drop missing values if first imputation
-    facimp<-facimp[which(is.na(facimp[,1])==FALSE),] ## Drop missing values if first imputation
+      full2<-full[which(is.na(facimp[,1])==FALSE),] ## Drop missing values if first imputation
+      facimp<-facimp[which(is.na(facimp[,1])==FALSE),] ## Drop missing values if first imputation
     }
     coffs<-matrix(,length(full2[1,]),r)
-  for(l in 1:r){ ## Obtain betas
+    for(l in 1:r){ ## Obtain betas
       y<-facimp[,l]
       coffs[,l]<-raoul.logest(full2,y,length(full2[,1]),20,0.0001)
-
-
-  }
-  for(l in 1:r){ ## Impute fitted values
-    if(it>0){
-    misout<-cbind(misout,exp(full2%*%coffs[,l])/(1+apply(exp(full2%*%coffs),1,sum)))
-    } else{
-      misout<-cbind(misout,exp(full%*%coffs[,l])/(1+apply(exp(full%*%coffs),1,sum)))
+      
+      
     }
-  }
-
+    for(l in 1:r){ ## Impute fitted values
+      if(it>0){
+        misout<-cbind(misout,exp(full2%*%coffs[,l])/(1+apply(exp(full2%*%coffs),1,sum)))
+      } else{
+        misout<-cbind(misout,exp(full%*%coffs[,l])/(1+apply(exp(full%*%coffs),1,sum)))
+      }
+    }
+    
   }
   return(misout)
-
-  }
+  
+}
 
 ## Called by EM-main
 raoul.logistic1<-function(misfact,full,m,n1,it,levlen,misp,ice){
-
+  
   facnames<-unique(colnames(misfact)) ## Unique factors with missing values
   levlen<-c(1,levlen)
   imps<-NULL ## Empty out-matrix
   sse<-NULL
   if(it>0){
-  b<-matrix(,length(full[1,]),length(m))
-  for(i in 1:length(facnames)){
-    logout<-raoul.logistic3(facimp=as.matrix(misfact[,which(colnames(misfact)==facnames[i])]),full=as.matrix(full),n1=n1,it=it,misp=as.matrix(misp[,which(colnames(misfact)==facnames[i])]),facnames=facnames[i])
-    if(!is.list(logout)){
-      return(ice)
+    b<-matrix(,length(full[1,]),length(m))
+    for(i in 1:length(facnames)){
+      logout<-raoul.logistic3(facimp=as.matrix(misfact[,which(colnames(misfact)==facnames[i])]),full=as.matrix(full),n1=n1,it=it,misp=as.matrix(misp[,which(colnames(misfact)==facnames[i])]),facnames=facnames[i])
+      if(!is.list(logout)){
+        return(ice)
+      }
+      imps<-cbind(imps,logout[[1]])
+      b[-m[sum(levlen[1:i]):(sum(levlen[1:(i+1)])-1)],sum(levlen[1:i]):(sum(levlen[1:(i+1)])-1)]<-logout[[2]]
+      sse<-cbind(sse,logout[[3]])
     }
-    imps<-cbind(imps,logout[[1]])
-    b[-m[sum(levlen[1:i]):(sum(levlen[1:(i+1)])-1)],sum(levlen[1:i]):(sum(levlen[1:(i+1)])-1)]<-logout[[2]]
-    sse<-cbind(sse,logout[[3]])
-  }
-
+    
   }else{
     b<-NULL
     for(i in 1:length(facnames)){
@@ -404,40 +406,40 @@ raoul.logistic1<-function(misfact,full,m,n1,it,levlen,misp,ice){
 
 ## Called by logistic 1
 raoul.logistic3<-function(facimp,full,n1,it,facnames,misp){
-    misout<-NULL
-    r<-length(facimp[1,])
-
+  misout<-NULL
+  r<-length(facimp[1,])
+  
+  if(it>0){
+    full2<-as.matrix(full[,which((colnames(full) %in% facnames)==FALSE)]) ## Drop factors to be imputed if not first imputation
+  } else {
+    full2<-as.matrix(full[which(is.na(facimp[,1])==FALSE),]) ## Drop missing values if first imputation
+    facimp<-as.matrix(facimp[which(is.na(facimp[,1])==FALSE),]) ## Drop missing values if first imputation
+  }
+  coffs<-matrix(,length(full2[1,]),r)
+  sse<-matrix(,1,r)
+  for(l in 1:r){ ## Obtain betas
+    y<-facimp[,l]
+    logout<-raoul.logest(full=full2,y=y,n=length(full2[,1]),maxit=20,toll=0.0001,misp2=misp[,l],it=it)
+    if(!is.list(logout)){
+      return("ice")
+    }
+    coffs[,l]<-logout[[1]]
+    sse[,l]<-logout[[2]]
+    
+    
+  }
+  for(l in 1:r){ ## Impute fitted values
     if(it>0){
-      full2<-as.matrix(full[,which((colnames(full) %in% facnames)==FALSE)]) ## Drop factors to be imputed if not first imputation
-    } else {
-      full2<-as.matrix(full[which(is.na(facimp[,1])==FALSE),]) ## Drop missing values if first imputation
-      facimp<-as.matrix(facimp[which(is.na(facimp[,1])==FALSE),]) ## Drop missing values if first imputation
+      misout<-cbind(misout,exp(full2%*%coffs[,l])/(1+apply(exp(full2%*%coffs),1,sum)))
+    } else{
+      misout<-cbind(misout,exp(full%*%coffs[,l])/(1+apply(exp(full%*%coffs),1,sum)))
     }
-    coffs<-matrix(,length(full2[1,]),r)
-    sse<-matrix(,1,r)
-    for(l in 1:r){ ## Obtain betas
-      y<-facimp[,l]
-      logout<-raoul.logest(full=full2,y=y,n=length(full2[,1]),maxit=20,toll=0.0001,misp2=misp[,l],it=it)
-      if(!is.list(logout)){
-        return("ice")
-      }
-      coffs[,l]<-logout[[1]]
-      sse[,l]<-logout[[2]]
-
-
-    }
-    for(l in 1:r){ ## Impute fitted values
-      if(it>0){
-        misout<-cbind(misout,exp(full2%*%coffs[,l])/(1+apply(exp(full2%*%coffs),1,sum)))
-      } else{
-        misout<-cbind(misout,exp(full%*%coffs[,l])/(1+apply(exp(full%*%coffs),1,sum)))
-      }
-    }
-
-
+  }
+  
+  
   out<-list(misout,coffs,sse)
   return(out)
-
+  
 }
 
 
@@ -463,7 +465,7 @@ raoul.logest<-function(full,y,n,maxit,toll,misp2,it){ ### IWLS
   if(it==0){
     sse<-sum((z-full%*%b1)^2)
   }else{
-  sse<-sum((z[which(misp2==0)]-full[which(misp2==0),]%*%b1)^2)
+    sse<-sum((z[which(misp2==0)]-full[which(misp2==0),]%*%b1)^2)
   }
   out<-list(b1,sse)
   return(out)
@@ -497,11 +499,11 @@ raoul.countfit<-function(mis,full,m,it,misp,ice){
       imps[,k]<-exp(full[,-m[k]]%*%b[-m[k],k])
       sse[,k]<-posout[[2]]
     }
-
+    
   }
   out<-list(imps,b,sse)
   return(out)
-  }
+}
 
 
 ## IWLS-estimation function for poisson. Called by Raoul.Countfit
@@ -531,8 +533,8 @@ raoul.poest<-function(full2,y,maxit,toll,misp2,it){ ### IWLS
 }
 
 raoul.lm<-function(formula, raoul, subset=NULL, w=NULL, na.action=NULL,
-                   method = "qr", model = TRUE, x = FALSE, y = FALSE, qr = TRUE,
-                   singular.ok = TRUE, contrasts = NULL, offset=NULL){
+  method = "qr", model = TRUE, x = FALSE, y = FALSE, qr = TRUE,
+  singular.ok = TRUE, contrasts = NULL, offset=NULL,returncat=FALSE,returncount=FALSE,facs=NULL,counts=NULL){
   if(class(raoul)!="raoul"){
     print("Object not Raoul, running Raoul to impute missing values")
     raoul<-raoul(raoul)
@@ -542,13 +544,13 @@ raoul.lm<-function(formula, raoul, subset=NULL, w=NULL, na.action=NULL,
   r2s<-c(0,0)
   for(i in 1:m){
     md<-lm(formula, raoul[[2]][[i]], subset=NULL, w=NULL, na.action=NULL,
-           method = "qr", model = TRUE, x = FALSE, y = FALSE, qr = TRUE,
-           singular.ok = TRUE, contrasts = NULL, offset=NULL)
+      method = "qr", model = TRUE, x = FALSE, y = FALSE, qr = TRUE,
+      singular.ok = TRUE, contrasts = NULL, offset=NULL)
     desks<-c(desks,list(summary(md)$coef))
     r2s<-r2s+c(summary(md)[[8]],summary(md)[[9]])
     rnm<-rownames(summary(md)$coef)
     cnm<-colnames(summary(md)$coef)
-
+    
   }
   desks<-array(unlist(desks), dim = c(nrow(desks[[1]]), ncol(desks[[1]]), length(desks)))
   b<-rowMeans(desks[,1,])
@@ -568,31 +570,30 @@ raoul.lm<-function(formula, raoul, subset=NULL, w=NULL, na.action=NULL,
 
 
 
-raoul.glm<-function(formula, raoul,family="gaussian", subset=NULL, w=NULL, na.action=NULL,
-                   method = "qr", model = TRUE, x = FALSE, y = FALSE, qr = TRUE,
-                   singular.ok = TRUE, contrasts = NULL, offset=NULL){
+raoul.glm<-function(formula, raoul,fam="gaussian",returncat=FALSE,returncount=FALSE,facs=NULL,counts=NULL){
   if(class(raoul)!="raoul"){
     print("Object not Raoul, running Raoul to impute missing values")
-    raoul<-raoul(raoul)
+    if(fam=="binomial"){
+      returncat=TRUE
+    }
+    rd<-raoul(raoul,facs=facs,counts=counts,returncat=returncat,returncount=returncount)
   }
-  m<-length(raoul[[2]])
+  m<-length(rd[[2]])
   desks<-NULL
   r2s<-c(0,0)
   for(i in 1:m){
-    md<-lm(formula, raoul[[2]][[i]],family, subset=NULL, w=NULL, na.action=NULL,
-           method = "qr", model = TRUE, x = FALSE, y = FALSE, qr = TRUE,
-           singular.ok = TRUE, contrasts = NULL, offset=NULL)
+    md<-glm(formula, data=rd[[2]][[i]],family=fam)
     desks<-c(desks,list(summary(md)$coef))
     r2s<-r2s+c(summary(md)[[8]],summary(md)[[9]])
     rnm<-rownames(summary(md)$coef)
     cnm<-colnames(summary(md)$coef)
-
+    
   }
   desks<-array(unlist(desks), dim = c(nrow(desks[[1]]), ncol(desks[[1]]), length(desks)))
   b<-rowMeans(desks[,1,])
   se<-sqrt(1/m*apply(desks[,2,]^2,1,sum)+(1+1/m)*(1/(m-1))*apply((desks[,1,]-b)^2,1,sum))
   t<-b/se
-  p<-pt(t,length(raoul[[2]][[1]][,1]))
+  p<-pt(t,length(rd[[2]][[1]][,1]))
   avgr2<-r2s/m
   coefs<-cbind(b,se,t,p)
   rownames(coefs)<-rnm
@@ -600,6 +601,6 @@ raoul.glm<-function(formula, raoul,family="gaussian", subset=NULL, w=NULL, na.ac
   names(avgr2)<-c("Avg.R-sq.", "Avg.Adj.R-sq.")
   out<-list(coefs,avgr2)
   names(out)<-c("Coefficients","Average R-squared")
-  class(out)<-"raoul.lm"
+  class(out)<-"raoul.glm"
   return(out)
 }
